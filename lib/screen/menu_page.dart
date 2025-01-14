@@ -1,4 +1,6 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'login_screen.dart';
 
 class MenuPage extends StatefulWidget {
   const MenuPage({super.key});
@@ -14,6 +16,23 @@ class _MenuPageState extends State<MenuPage> {
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  // Function to sign out the user
+  void _signOut() async {
+    try {
+      await FirebaseAuth.instance.signOut();
+      // After signing out, redirect the user to the login screen
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage(verificationid: '')), // Pass the required parameter if needed
+      );
+    } catch (e) {
+      // Handle sign-out error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error signing out: ${e.toString()}")),
+      );
+    }
   }
 
   @override
@@ -146,6 +165,34 @@ class _MenuPageState extends State<MenuPage> {
                   title: "Invite your friends",
                   onTap: () {},
                 ),
+                const Divider(
+                  color: Colors.grey,
+                  height: 1,
+                  thickness: 0.5,
+                ),
+                // Sign-out item
+                GestureDetector(
+                  onTap: _signOut,
+                  child: const ListTile(
+                    leading: Icon(
+                      Icons.exit_to_app,
+                      size: 24,
+                      color: Colors.black,
+                    ),
+                    title: Text(
+                      "Sign Out",
+                      style: TextStyle(
+                        fontFamily: 'mulish',
+                        fontSize: 16,
+                      ),
+                    ),
+                    // trailing: Icon(
+                    //   Icons.arrow_forward_ios,
+                    //   size: 16,
+                    //   color: Colors.grey,
+                    // ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -168,8 +215,7 @@ class _MenuPageState extends State<MenuPage> {
           fontSize: 16,
         ),
       ),
-      trailing:
-          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+      trailing: const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
       onTap: onTap,
     );
   }

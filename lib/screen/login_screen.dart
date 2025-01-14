@@ -1,21 +1,23 @@
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-// import 'package:firebase_auth/firebase_auth.dart';
 import '../CustomWidgets/my_textfields.dart';
+import 'main_screen.dart';
 import 'verify_screen.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  final String verificationid;
+  const LoginPage({super.key, required this.verificationid});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final FocusNode _phoneFocusNode = FocusNode();
   final TextEditingController _countryCodeController = TextEditingController();
   final TextEditingController _phoneNumberController = TextEditingController();
+
+  String? _verificationId; // Add a state variable for verificationId
 
   @override
   void dispose() {
@@ -108,51 +110,53 @@ class _LoginPageState extends State<LoginPage> {
 
                     if (phoneNumber.isNotEmpty && countryCode.isNotEmpty) {
                       try {
-                        Navigator.push(
-  context,
-  MaterialPageRoute(
-    builder: (context) => VerifyPage(
-      phoneNumber: phoneNumber,
-      countryCode: countryCode,
-      // verificationid: "mock_verification_id", // Pass a mock verification ID
-    ),
-  ),
-);
 
-                        // Authenticating the phone number and sending OTP
-                      //   await FirebaseAuth.instance.verifyPhoneNumber(
-                      //     phoneNumber: "$countryCode$phoneNumber",
-                      //     verificationCompleted:
-                      //         (PhoneAuthCredential credential) {
-                      //       // Handle automatic verification
-                      //     },
-                      //     verificationFailed: (FirebaseAuthException ex) {
-                      //       // Show an error message if verification fails
-                      //       ScaffoldMessenger.of(context).showSnackBar(
-                      //         SnackBar(
-                      //             content: Text(
-                      //                 "Verification failed: ${ex.message}")),
-                      //       );
-                      //     },
-                      //     codeSent: (verificationId, int? resendToken) {
-                      //       // Navigate to VerifyPage when code is sent
-                      //       Navigator.push(
-                      //         context,
-                      //         MaterialPageRoute(
-                      //           builder: (context) => VerifyPage(
-                      //             phoneNumber: phoneNumber,
-                      //             countryCode: countryCode,
-                      //             verificationid:
-                      //                 verificationId, // Pass the actual verificationId
-                      //           ),
-                      //         ),
-                      //       );
-                      //     },
-                      //     codeAutoRetrievalTimeout: (String verificationId) {
-                      //       // Handle timeout if needed
-                      //     },
-                      //   );
-                       } catch (ex) {
+                        // await FirebaseAuth.instance.verifyPhoneNumber(
+                        //   phoneNumber:
+                        //       '$countryCode$phoneNumber', // Concatenate country code and number
+                        //   verificationCompleted:
+                        //       (PhoneAuthCredential credential) {
+                        //     // Auto-retrieval or instant verification
+                        //     FirebaseAuth.instance
+                        //         .signInWithCredential(credential)
+                        //         .then((value) {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => const MainScreen()),
+                              );
+                          //   });
+                          // },
+                          // verificationFailed: (FirebaseAuthException ex) {
+                          //   // Handle errors
+                          //   ScaffoldMessenger.of(context).showSnackBar(
+                          //     SnackBar(
+                          //         content: Text(
+                          //             "Verification failed: ${ex.message}")),
+                          //   );
+                          // },
+                          // codeSent: (String verificationId, int? resendToken) {
+                          //   setState(() {
+                          //     _verificationId = verificationId;
+                          //   });
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => VerifyPage(
+                                  // verificationid: verificationId,
+                                  phoneNumber: phoneNumber,
+                                  countryCode: countryCode,
+                                ),
+                              ),
+                            );
+                        //   },
+                        //   codeAutoRetrievalTimeout: (String verificationId) {
+                        //     // Timeout handler
+                        //   },
+                        // );
+
+                
+                      } catch (ex) {
                         // Handle exceptions (e.g., network errors)
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
